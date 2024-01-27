@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"syscall"
+	"unsafe"
 )
 
 func DownloadFile(url string, path string) error {
@@ -165,4 +167,8 @@ func saveUnZipFile(destDir string, f zip.File) error {
 	}
 
 	return nil
+}
+
+func WideCharPtr(s string) uintptr {
+	return uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(s)))
 }
