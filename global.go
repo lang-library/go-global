@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func DownloadFile(url string, path string) error {
@@ -37,7 +38,12 @@ func Echo(x ...any) {
 			fmt.Printf("%s: ", x[1])
 		}
 	}
-	fmt.Println(ToPrettyJson(x[0]))
+	json := ToPrettyJson(x[0])
+	if strings.HasPrefix(json, "\"") {
+		fmt.Println(x[0])
+	} else {
+		fmt.Println(json)
+	}
 }
 
 func ExeDir() string {
@@ -74,7 +80,12 @@ func Log(x ...any) {
 			msg += fmt.Sprintf("%s: ", x[1])
 		}
 	}
-	msg += ToPrettyJson(x[0])
+	json := ToPrettyJson(x[0])
+	if strings.HasPrefix(json, "\"") {
+		msg += x[0].(string)
+	} else {
+		msg += json
+	}
 	msg += "\n"
 	os.Stderr.WriteString(msg)
 }
