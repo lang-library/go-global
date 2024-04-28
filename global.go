@@ -37,7 +37,7 @@ func Echo(x ...any) {
 			fmt.Printf("%s: ", x[1])
 		}
 	}
-	fmt.Println(x[0])
+	fmt.Println(ToPrettyJson(x[0]))
 }
 
 func ExeDir() string {
@@ -63,6 +63,22 @@ func GetParent(path string) string {
 	return filepath.Dir(path)
 }
 
+func Log(x ...any) {
+	len := len(x)
+	if len == 0 || len > 2 {
+		panic("global.Log(): args out of range")
+	}
+	msg := "[Log] "
+	if len == 2 {
+		if x[1] != nil {
+			msg += fmt.Sprintf("%s: ", x[1])
+		}
+	}
+	msg += ToPrettyJson(x[0])
+	msg += "\n"
+	os.Stderr.WriteString(msg)
+}
+
 func PrettifyJson(jsonStr string) string {
 	var buf bytes.Buffer
 	err := json.Indent(&buf, []byte(jsonStr), "", "  ")
@@ -71,19 +87,6 @@ func PrettifyJson(jsonStr string) string {
 	}
 	indentJson := buf.String()
 	return indentJson
-}
-
-func Print(x ...any) {
-	len := len(x)
-	if len == 0 || len > 2 {
-		panic("global.PrettyPrint(): args out of range")
-	}
-	if len == 2 {
-		if x[1] != nil {
-			fmt.Printf("%s: ", x[1])
-		}
-	}
-	fmt.Println(ToPrettyJson(x[0]))
 }
 
 func Prepare(path string) {
@@ -117,10 +120,6 @@ func UnZip(src, destDir string) error {
 	}
 	defer r.Close()
 
-	//ext := filepath.Ext(src)
-	//rep := regexp.MustCompile(ext + "$")
-	//dir := filepath.Base(rep.ReplaceAllString(src, ""))
-	//destDir := filepath.Join(dest, dir)
 	// ファイル名のディレクトリを作成する
 	if err := os.MkdirAll(destDir, os.ModeDir); err != nil {
 		return err
